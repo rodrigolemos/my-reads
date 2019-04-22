@@ -1,7 +1,7 @@
 import React from 'react';
 import * as BooksAPI from './BooksAPI';
 import './App.css';
-import Book from './Book';
+import BookShelf from './BookShelf';
 
 class BooksApp extends React.Component {
   constructor(props) {
@@ -26,11 +26,11 @@ class BooksApp extends React.Component {
 
   changeBookShelf = (book, shelf) => {
     
-    BooksAPI.update(book, shelf).then( (bookret) => {
+    BooksAPI.update(book, shelf).then( (result) => {
       
-      this.state.books.forEach( (bookst) => {
-        if ( bookst.id === book.id ) {
-          bookst.shelf = shelf;
+      this.state.books.forEach( (bstate) => {
+        if ( bstate.id === book.id ) {
+          bstate.shelf = shelf;
         }
       });
   
@@ -54,7 +54,6 @@ class BooksApp extends React.Component {
                   NOTES: The search from BooksAPI is limited to a particular set of search terms.
                   You can find these search terms here:
                   https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-
                   However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
                   you don't find a specific author or title. Every search is limited by search terms.
                 */}
@@ -72,36 +71,21 @@ class BooksApp extends React.Component {
               <h1>MyReads</h1>
             </div>
             <div className="list-books-content">
-              <div className="bookshelf">
-                  <h2 className="bookshelf-title">Currently Reading</h2>
-                  <div className="bookshelf-books">
-                      <ol className="books-grid">
-                          {this.state.books.filter(book => book.shelf === 'currentlyReading').map( book => (
-                              <Book key={book.id} book={book} changeShelf={this.changeBookShelf} />
-                          ))}
-                      </ol>
-                  </div>
-              </div>
-              <div className="bookshelf">
-                  <h2 className="bookshelf-title">Want to Read</h2>
-                  <div className="bookshelf-books">
-                      <ol className="books-grid">
-                          {this.state.books.filter(book => book.shelf === 'wantToRead').map( book => (
-                              <Book key={book.id} book={book} changeShelf={this.changeBookShelf} />
-                          ))}
-                      </ol>
-                  </div>
-              </div>
-              <div className="bookshelf">
-                  <h2 className="bookshelf-title">Read</h2>
-                  <div className="bookshelf-books">
-                      <ol className="books-grid">
-                          {this.state.books.filter(book => book.shelf === 'read').map( book => (
-                              <Book key={book.id} book={book} changeShelf={this.changeBookShelf} />
-                          ))}
-                      </ol>
-                  </div>
-              </div>
+              <BookShelf
+                section="Currently Reading"
+                books={this.state.books.filter(book => book.shelf === 'currentlyReading')}
+                changeBookShelf={this.changeBookShelf}
+                />
+              <BookShelf
+                section="Want to Read"
+                books={this.state.books.filter(book => book.shelf === 'wantToRead')}
+                changeBookShelf={this.changeBookShelf}
+                />
+              <BookShelf
+                section="Read"
+                books={this.state.books.filter(book => book.shelf === 'read')}
+                changeBookShelf={this.changeBookShelf}
+                />
             </div>
             <div className="open-search">
               <button onClick={() => this.setState({ showSearchPage: true })}>Add a book</button>
@@ -113,4 +97,4 @@ class BooksApp extends React.Component {
   }
 }
 
-export default BooksApp
+export default BooksApp;
