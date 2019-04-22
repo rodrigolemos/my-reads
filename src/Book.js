@@ -13,7 +13,7 @@ class Book extends Component {
     }
     
     handleChange(event) {
-        this.props.changeShelf(this.props.book, event.target.value);
+        this.props.changeBookShelf(this.props.book, event.target.value);
     }
 
     render() {
