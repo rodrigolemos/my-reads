@@ -1,8 +1,7 @@
 import React from 'react';
 import * as BooksAPI from './BooksAPI';
 import './App.css';
-import './BookShelf';
-import BookShelf from './BookShelf';
+import Book from './Book';
 
 class BooksApp extends React.Component {
   constructor(props) {
@@ -15,22 +14,32 @@ class BooksApp extends React.Component {
        * pages, as well as provide a good URL they can bookmark and share.
        */
       showSearchPage: false,
-      booksReading: [],
-      booksWantToRead: [],
-      booksRead: []
+      books: []
     };
   }
 
   componentDidMount() {
     BooksAPI.getAll().then((books) => {
+      this.setState({ books });
+    });
+  }
 
-      const booksReading = books.filter( book => book.shelf === 'currentlyReading' );
-      const booksWantToRead = books.filter( book => book.shelf === 'wantToRead' );
-      const booksRead = books.filter( book => book.shelf === 'read' );
-
-      this.setState({ booksReading, booksWantToRead, booksRead });
+  changeBookShelf = (book, shelf) => {
+    
+    BooksAPI.update(book, shelf).then( (bookret) => {
+      
+      this.state.books.forEach( (bookst) => {
+        if ( bookst.id === book.id ) {
+          bookst.shelf = shelf;
+        }
+      });
+  
+      this.setState({
+        books: this.state.books
+      });
 
     });
+    
   }
 
   render() {
@@ -63,9 +72,36 @@ class BooksApp extends React.Component {
               <h1>MyReads</h1>
             </div>
             <div className="list-books-content">
-              <BookShelf section="Currently Reading" books={this.state.booksReading}/>
-              <BookShelf section="Want to Read" books={this.state.booksWantToRead}/>
-              <BookShelf section="Read" books={this.state.booksRead}/>
+              <div className="bookshelf">
+                  <h2 className="bookshelf-title">Currently Reading</h2>
+                  <div className="bookshelf-books">
+                      <ol className="books-grid">
+                          {this.state.books.filter(book => book.shelf === 'currentlyReading').map( book => (
+                              <Book key={book.id} book={book} changeShelf={this.changeBookShelf} />
+                          ))}
+                      </ol>
+                  </div>
+              </div>
+              <div className="bookshelf">
+                  <h2 className="bookshelf-title">Want to Read</h2>
+                  <div className="bookshelf-books">
+                      <ol className="books-grid">
+                          {this.state.books.filter(book => book.shelf === 'wantToRead').map( book => (
+                              <Book key={book.id} book={book} changeShelf={this.changeBookShelf} />
+                          ))}
+                      </ol>
+                  </div>
+              </div>
+              <div className="bookshelf">
+                  <h2 className="bookshelf-title">Read</h2>
+                  <div className="bookshelf-books">
+                      <ol className="books-grid">
+                          {this.state.books.filter(book => book.shelf === 'read').map( book => (
+                              <Book key={book.id} book={book} changeShelf={this.changeBookShelf} />
+                          ))}
+                      </ol>
+                  </div>
+              </div>
             </div>
             <div className="open-search">
               <button onClick={() => this.setState({ showSearchPage: true })}>Add a book</button>
