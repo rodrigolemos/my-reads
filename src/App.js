@@ -22,27 +22,21 @@ class BooksApp extends React.Component {
   }
 
   changeBookShelf = (book, shelf) => {
-    
+
     BooksAPI.update(book, shelf).then( (result) => {
-      
+
       this.state.books.forEach( (bstate) => {
         if ( bstate.id === book.id ) {
           bstate.shelf = shelf;
         }
       });
-  
+
       this.setState({
         books: this.state.books
       });
 
     });
-    
-  }
-  
-  updateQuery = (query) => {
-      this.setState({
-         query: query.trim() 
-      });
+
   }
 
   render() {
