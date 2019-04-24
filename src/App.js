@@ -7,6 +7,7 @@ import BookShelf from './BookShelf';
 import SearchBook from './SearchBook';
 
 class BooksApp extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -15,12 +16,20 @@ class BooksApp extends React.Component {
     };
   }
 
+  /**
+   * Recupera livros da BooksAPI
+   */
   componentDidMount() {
     BooksAPI.getAll().then((books) => {
       this.setState({ books });
     });
   }
 
+  /**
+   * Atualiza prateleira do livro movido na API
+   * através do metodo update e atualiza livros
+   * no state com a nova prateleira
+   */
   changeBookShelf = (book, shelf) => {
 
     BooksAPI.update(book, shelf).then( (result) => {
@@ -73,7 +82,7 @@ class BooksApp extends React.Component {
         )}/>
         <Route path="/search" render={ () => (
           <SearchBook
-            books={this.state.books}
+            shelfBooks={this.state.books}
             changeBookShelf={this.changeBookShelf}
           />
         )}/>
