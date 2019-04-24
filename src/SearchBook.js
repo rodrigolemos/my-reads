@@ -6,42 +6,49 @@ import escapeRegExp from 'escape-string-regexp';
 import SortBy from 'sort-by';
 
 class SearchBook extends Component {
-    
+
     constructor(props) {
         super(props);
         this.state = {
             query: '',
-            books: this.props.books
+            books: []
         };
     }
-    
-    componentDidMount() {
-        if ( this.state.books.length === 0 ) {
-            BooksAPI.getAll().then((books) => {
-                this.setState({ books });
-            });
-        }
-    }
-    
+
     updateQuery = (query) => {
-        this.setState({
-           query: query.trim() 
+
+        BooksAPI.search(query).then((books) => {
+
+            this.setState({ query, books });
+
         });
+
     }
-    
+
     render() {
-        
+
         let booksToDisplay, match;
-        
+
         if (this.state.query) {
-            match = new RegExp(escapeRegExp(this.state.query), 'i');
-            booksToDisplay = this.state.books.filter( (book) => match.test(book.title) || match.test(book.authors) );
+
+            if ( typeof this.state.books !== 'undefined' && !this.state.books.error ) {
+
+                match = new RegExp(escapeRegExp(this.state.query), 'i');
+                booksToDisplay = this.state.books.filter( (book) => match.test(book.title) || match.test(book.authors) );
+
+            } else {
+
+                booksToDisplay = [];
+
+            }
+
         } else {
+
             booksToDisplay = [];
         }
-        
+
         booksToDisplay.sort(SortBy('name'));
-        
+
         return (
             <div className="search-books">
                 <div className="search-books-bar">
