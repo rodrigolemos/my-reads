@@ -64,6 +64,19 @@ class SearchBook extends Component {
         if (this.state.query && !this.state.books.error) {
 
             booksToDisplay = this.state.books;
+            
+            booksToDisplay.forEach( (book) => {
+                
+                if ( this.props.shelfBooks.find( (b) => b.id === book.id) ) {
+                    
+                    let bookinshelf = this.props.shelfBooks.filter( x => x.id === book.id );
+                    
+                    book.shelf = bookinshelf[0].shelf;
+                    
+                }
+                
+            });
+            
 
         }
 
