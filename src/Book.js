@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 class Book extends Component {
-    
+
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
@@ -11,7 +11,7 @@ class Book extends Component {
             backgroundImage: `url(${this.props.book.imageLinks.thumbnail})`
         }
     }
-    
+
     handleChange(event) {
         this.props.changeBookShelf(this.props.book, event.target.value);
     }
@@ -23,7 +23,7 @@ class Book extends Component {
                     <div className="book-top">
                     <div className="book-cover" style={this.style}></div>
                     <div className="book-shelf-changer">
-                        <select defaultValue={this.props.book.shelf} onChange={this.handleChange} >
+                        <select defaultValue={(this.props.book.shelf) ? this.props.book.shelf : 'none'} onChange={this.handleChange} >
                             <option value="move" disabled>Move to...</option>
                             <option value="currentlyReading">Currently Reading</option>
                             <option value="wantToRead">Want to Read</option>
