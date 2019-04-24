@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import * as BooksAPI from './BooksAPI';
 import { Link } from 'react-router-dom';
 import BookShelf from './BookShelf';
-import escapeRegExp from 'escape-string-regexp';
 import SortBy from 'sort-by';
 
 class SearchBook extends Component {
@@ -15,39 +14,63 @@ class SearchBook extends Component {
         };
     }
 
+    /**
+     * Atualiza consulta de livros de acordo com
+     * campo de pesquisa
+     */
     updateQuery = (query) => {
 
-        BooksAPI.search(query).then((books) => {
+        /**
+         * Caso campo esteja preenchido, atualiza estado da query
+         * e recupera livros da BooksAPI
+         */
+        if (query) {
 
-            this.setState({ query, books });
+            this.setState({
 
-        });
+                query: query.trim()
+
+            }, () => {
+
+                BooksAPI.search(query).then((books) => {
+                    /**
+                     * Em caso de erro, seta livros como array
+                     * vazio para exibição da prateleira
+                     */
+                    if ( books.error ) {
+                        books = [];
+                    }
+                    this.setState({ books });
+                });
+
+            });
+
+        } else {
+
+            this.setState({ query: '', books: [] });
+
+        }
 
     }
 
     render() {
 
-        let booksToDisplay, match;
+        let booksToDisplay = [];
 
-        if (this.state.query) {
+        /**
+         * Quando a consulta estiver preenchida e não tiver
+         * retornado erro
+         */
+        if (this.state.query && !this.state.books.error) {
 
-            if ( typeof this.state.books !== 'undefined' && !this.state.books.error ) {
+            booksToDisplay = this.state.books;
 
-                match = new RegExp(escapeRegExp(this.state.query), 'i');
-                booksToDisplay = this.state.books.filter( (book) => match.test(book.title) || match.test(book.authors) );
-
-            } else {
-
-                booksToDisplay = [];
-
-            }
-
-        } else {
-
-            booksToDisplay = [];
         }
 
-        booksToDisplay.sort(SortBy('name'));
+        /**
+         * Ordena livros por título
+         */
+        booksToDisplay.sort(SortBy('title'));
 
         return (
             <div className="search-books">
@@ -73,8 +96,6 @@ class SearchBook extends Component {
                             />
                         </div>
                     </div>
-                  <ol className="books-grid">
-                  </ol>
                 </div>
             </div>
         );
