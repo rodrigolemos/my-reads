@@ -59,24 +59,27 @@ class SearchBook extends Component {
 
         /**
          * Quando a consulta estiver preenchida e não tiver
-         * retornado erro
+         * retornado erro da API
          */
         if (this.state.query && !this.state.books.error) {
 
             booksToDisplay = this.state.books;
-            
+
+            /**
+             * Livros que já foram categorizados na página principal
+             * permanecem com sua categoria
+             */
             booksToDisplay.forEach( (book) => {
-                
+
                 if ( this.props.shelfBooks.find( (b) => b.id === book.id) ) {
-                    
+
                     let bookinshelf = this.props.shelfBooks.filter( x => x.id === book.id );
-                    
+
                     book.shelf = bookinshelf[0].shelf;
-                    
+
                 }
-                
+
             });
-            
 
         }
 
