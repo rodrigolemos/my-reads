@@ -5,14 +5,17 @@ import { Route } from 'react-router-dom';
 import './App.css';
 import BookShelf from './BookShelf';
 import SearchBook from './SearchBook';
+import ReactLoading from 'react-loading';
 
 class BooksApp extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
       query: '',
-      books: []
+      books: [],
+      loading: true,
+      dcateg: ['Currently Reading', 'Want to Read', 'Read'],
+      vcateg: ['currentlyReading', 'wantToRead', 'read']
     };
   }
 
@@ -20,8 +23,8 @@ class BooksApp extends React.Component {
    * Recupera livros da BooksAPI
    */
   componentDidMount() {
-    BooksAPI.getAll().then((books) => {
-      this.setState({ books });
+    BooksAPI.getAll().then(books => {
+      this.setState({ books, loading: false });
     });
   }
 
@@ -31,56 +34,61 @@ class BooksApp extends React.Component {
    * no state com a nova prateleira
    */
   changeBookShelf = (book, shelf) => {
-
     BooksAPI.update(book, shelf).then(() => {
       book.shelf = shelf;
       this.setState(state => ({
         books: state.books.filter(b => b.id !== book.id).concat([book]),
-      }))
-    })
-
-  }
+      }));
+    });
+  };
 
   render() {
     return (
       <div className="app">
-        <Route exact path="/" render={ () => (
-          <div className="list-books">
-            <div className="list-books-title">
-              <h1>MyReads</h1>
-            </div>
-            <div className="list-books-content">
-              <BookShelf
-                section="Currently Reading"
-                books={this.state.books.filter(book => book.shelf === 'currentlyReading')}
-                changeBookShelf={this.changeBookShelf}
-                />
-              <BookShelf
-                section="Want to Read"
-                books={this.state.books.filter(book => book.shelf === 'wantToRead')}
-                changeBookShelf={this.changeBookShelf}
-                />
-              <BookShelf
-                section="Read"
-                books={this.state.books.filter(book => book.shelf === 'read')}
-                changeBookShelf={this.changeBookShelf}
-                />
-            </div>
-            <div className="open-search">
-              <Link to="/search">
-                <button>Search</button>
-              </Link>
-            </div>
-          </div>
-        )}/>
-        <Route path="/search" render={ () => (
-          <SearchBook
-            shelfBooks={this.state.books}
-            changeBookShelf={this.changeBookShelf}
+        {this.state.loading ? (
+          <ReactLoading
+            type="spin"
+            color="green"
+            className="loading"/>
+        ) : (
+          <Route
+            exact
+            path="/"
+            render={() => (
+              <div className="list-books">
+                <div className="list-books-title">
+                  <h1>MyReads</h1>
+                </div>
+                <div className="list-books-content">
+                  {this.state.vcateg.map( (categ, i) => (
+                    <BookShelf
+                      key={i}
+                      section={this.state.dcateg[i]}
+                      books={this.state.books.filter(book => book.shelf === categ)}
+                      changeBookShelf={this.changeBookShelf}
+                    />
+                  ))}
+                </div>
+                <div className="open-search">
+                  <Link to="/search">
+                    <button>Search</button>
+                  </Link>
+                </div>
+              </div>
+            )}
           />
-        )}/>
+        )}
+        <Route
+          path="/search"
+          render={() => (
+            <SearchBook
+              shelfBooks={this.state.books}
+              changeBookShelf={this.changeBookShelf}
+            />
+          )}
+        />
       </div>
-    )
+    );
   }
 }
 
