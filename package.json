@@ -1,6 +1,9 @@
 {
   "name": "myreads-app",
   "version": "0.1.0",
+  "engines": {
+    "node": "12.2.0"
+  }
   "private": true,
   "dependencies": {
     "escape-string-regexp": "^2.0.0",
